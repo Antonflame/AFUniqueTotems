@@ -83,14 +83,16 @@ public class EventHandlers implements Listener {
 
         boolean hasTotem = false;
         if (player.getHealth() - event.getFinalDamage() <= 0) {
-            for (ItemStack item : player.getInventory().getContents()) {
-                if (item != null && item.getType() == Material.TOTEM_OF_UNDYING) {
-                    if (hasKey(item, plugin.autoTotemKey)) {
-                        item.setAmount(item.getAmount() - 1);
-                        player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
-                        player.sendMessage(ConfigManager.autoTotemUsed);
-                        hasTotem = true;
-                        break;
+            if (findTotemInHands(player.getInventory()) == null) {
+                for (ItemStack item : player.getInventory().getContents()) {
+                    if (item != null && item.getType() == Material.TOTEM_OF_UNDYING) {
+                        if (hasKey(item, plugin.autoTotemKey)) {
+                            item.setAmount(item.getAmount() - 1);
+                            player.getActivePotionEffects().forEach(potionEffect -> player.removePotionEffect(potionEffect.getType()));
+                            player.sendMessage(ConfigManager.autoTotemUsed);
+                            hasTotem = true;
+                            break;
+                        }
                     }
                 }
             }
