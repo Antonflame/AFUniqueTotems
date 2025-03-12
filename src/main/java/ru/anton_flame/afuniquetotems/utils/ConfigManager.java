@@ -9,7 +9,7 @@ import java.util.List;
 public class ConfigManager {
 
     public static ConfigurationSection totems;
-    public static String noPermission, reloaded, playerNotFound, invalidTotemType, invalidAmount, totemGiven, reusableTotemUsed, effectsPreservingTotemUsed, autoTotemUsed;
+    public static String noPermission, reloaded, playerNotFound, invalidTotemType, invalidAmount, totemGiven, reusableTotemUsed, effectsPreservingTotemUsed, autoTotemUsed, upgradedTotemUsed;
     public static List<String> help;
 
     public static void setupConfigValues(Plugin plugin) {
@@ -26,6 +26,7 @@ public class ConfigManager {
         reusableTotemUsed = Hex.color(messages.getString("reusable_totem_used"));
         effectsPreservingTotemUsed = Hex.color(messages.getString("effects_preserving_totem_used"));
         autoTotemUsed = Hex.color(messages.getString("auto_totem_used"));
+        upgradedTotemUsed = Hex.color(messages.getString("upgraded_totem_used"));
         help = Hex.color(messages.getStringList("help"));
     }
 }

@@ -2,12 +2,15 @@ package ru.anton_flame.afuniquetotems.handlers;
 
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Creeper;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +23,7 @@ import ru.anton_flame.afuniquetotems.utils.ConfigManager;
 import ru.anton_flame.afuniquetotems.utils.Hex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,14 +102,31 @@ public class EventHandlers implements Listener {
             }
 
             ItemStack totem = findTotemInHands(player.getInventory());
-            if (totem != null && hasKey(totem, plugin.effectsPreservingTotemKey)) {
-                totem.setAmount(totem.getAmount() - 1);
+            if (totem != null) {
+                if (hasKey(totem, plugin.effectsPreservingTotemKey)) {
+                    totem.setAmount(totem.getAmount() - 1);
 
-                player.sendMessage(ConfigManager.effectsPreservingTotemUsed.replace("%effects%", player.getActivePotionEffects().stream()
-                        .map(PotionEffect::getType)
-                        .map(PotionEffectType::getName)
-                        .collect(Collectors.joining(", "))));
-                hasTotem = true;
+                    player.sendMessage(ConfigManager.effectsPreservingTotemUsed.replace("%effects%", player.getActivePotionEffects().stream()
+                            .map(PotionEffect::getType)
+                            .map(PotionEffectType::getName)
+                            .collect(Collectors.joining(", "))));
+                    hasTotem = true;
+                } else if (hasKey(totem, plugin.upgradedTotemKey)) {
+                    PersistentDataContainer container = totem.getItemMeta().getPersistentDataContainer();
+                    List<String> effects = Arrays.asList(container.getOrDefault(plugin.upgradedTotemKey, PersistentDataType.STRING, "").split(",\\s*"));
+                    effects.forEach(totemEffect -> {
+                        String[] effect = totemEffect.split(":");
+                        PotionEffectType effectType = PotionEffectType.getByName(effect[0]);
+                        int effectLevel = Integer.parseInt(effect[1]) - 1;
+                        int effectDuration = Integer.parseInt(effect[2]) * 20;
+
+                        player.addPotionEffect(new PotionEffect(effectType, effectDuration, effectLevel));
+                    });
+
+                    totem.setAmount(totem.getAmount() - 1);
+                    player.sendMessage(ConfigManager.upgradedTotemUsed);
+                    hasTotem = true;
+                }
             }
         }
 
@@ -139,6 +160,19 @@ public class EventHandlers implements Listener {
     private boolean hasKey(ItemStack item, NamespacedKey key) {
         ItemMeta itemMeta = item.getItemMeta();
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-        return container.has(key, PersistentDataType.INTEGER);
+        return container.has(key, PersistentDataType.INTEGER) || container.has(key, PersistentDataType.STRING);
+    }
+
+    @EventHandler
+    public void target(EntityTargetEvent event) {
+        if (event.getEntity() instanceof Creeper) {
+            Entity target = event.getTarget();
+            if (target instanceof Player) {
+                Player player = (Player) event.getTarget();
+                if (player.getInventory().getItemInMainHand().getType() == Material.TOTEM_OF_UNDYING) {
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 }

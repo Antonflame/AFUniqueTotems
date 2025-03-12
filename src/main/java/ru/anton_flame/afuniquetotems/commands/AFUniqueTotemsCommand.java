@@ -97,6 +97,8 @@ public class AFUniqueTotemsCommand implements CommandExecutor, TabCompleter {
                         case "auto_totem":
                             container.set(plugin.autoTotemKey, PersistentDataType.INTEGER, 1);
                             break;
+                        case "upgraded_totem":
+                            container.set(plugin.upgradedTotemKey, PersistentDataType.STRING, String.join(", ", totemSettings.getStringList("effects")));
                         default:
                             break;
                     }

@@ -13,6 +13,7 @@ public final class AFUniqueTotems extends JavaPlugin {
     public NamespacedKey reusableTotemKey = NamespacedKey.fromString("reusable_totem_uses");
     public NamespacedKey effectsPreservingTotemKey = NamespacedKey.fromString("preserving_effects_totem");
     public NamespacedKey autoTotemKey = NamespacedKey.fromString("auto_totem");
+    public NamespacedKey upgradedTotemKey = NamespacedKey.fromString("upgraded_totem");
 
     @Override
     public void onEnable() {
