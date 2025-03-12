@@ -162,17 +162,4 @@ public class EventHandlers implements Listener {
         PersistentDataContainer container = itemMeta.getPersistentDataContainer();
         return container.has(key, PersistentDataType.INTEGER) || container.has(key, PersistentDataType.STRING);
     }
-
-    @EventHandler
-    public void target(EntityTargetEvent event) {
-        if (event.getEntity() instanceof Creeper) {
-            Entity target = event.getTarget();
-            if (target instanceof Player) {
-                Player player = (Player) event.getTarget();
-                if (player.getInventory().getItemInMainHand().getType() == Material.TOTEM_OF_UNDYING) {
-                    event.setCancelled(true);
-                }
-            }
-        }
-    }
 }
